@@ -1,18 +1,18 @@
 from pathlib import Path
 import torch
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusionXLPipeline
 
-MODEL_ID = "runwayml/stable-diffusion-v1-5"
+MODEL_ID = "SG161222/RealVisXL_V5.0"
 
 output_dir = Path("outputs")
 output_dir.mkdir(exist_ok=True)
 
 print("Loading model...")
-pipe = StableDiffusionPipeline.from_pretrained(
+pipe = StableDiffusionXLPipeline.from_pretrained(
     MODEL_ID,
     torch_dtype=torch.float16,
-    use_safetensors=True,
 )
+
 pipe = pipe.to("cuda")
 pipe.enable_attention_slicing()
 
@@ -25,11 +25,11 @@ print("Generating image...")
 image = pipe(
     prompt=prompt,
     negative_prompt=negative_prompt,
-    num_inference_steps=30,
-    guidance_scale=7.5,
+    num_inference_steps=50,
+    guidance_scale=10,
     generator=generator,
-    width=512,
-    height=512,
+    width=1024,
+    height=1024,
 ).images[0]
 
 save_path = output_dir / "sample.png"
