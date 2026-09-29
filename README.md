@@ -105,6 +105,27 @@ GPU: NVIDIA GeForce RTX 3060
 
 ## 画像生成
 
+比較用 UI は次のコマンドで起動します。
+
+```bash
+uv run python app.py
+```
+
+`Compare parameter` で Guidance Scale または Steps を選び、比較候補を
+カンマ区切りで入力します。比較しないパラメーターは固定スライダーで指定します。
+各候補は同じ Prompt・Seed で生成されます。
+
+- Guidance Scale: 0〜20
+- Steps: 1〜100 の整数
+- 比較候補: 最大20個
+- Seed: 0〜4294967295 の整数
+
+モデルは最初の Generate 時に読み込みます。画像生成には CUDA 対応 GPU が必要です。
+結果は実行ごとに `outputs/<日時>_<一意なID>/` に保存されます。
+画像ごとに同名の JSON ファイルを保存し、モデル ID・プロンプト・Seed・生成パラメーターを記録します。
+途中で生成が失敗した場合も、保存済みの結果は残ります。
+
+単体の生成スクリプトを使う場合は、
 以下を実行します。
 
 ```bash
@@ -119,6 +140,9 @@ uv run python test_generate.py
 
 ```text
 image-gen-compare-dashboard/
+├── app.py          # Gradio UI と入力・結果の受け渡し
+├── comparison.py   # 入力検証と比較条件の作成（GPU 不要）
+├── generation.py   # モデル読み込み・生成・結果保存
 ├── test_generate.py
 ├── pyproject.toml
 ├── uv.lock
